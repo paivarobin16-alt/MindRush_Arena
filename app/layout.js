@@ -1,8 +1,8 @@
 import "./globals.css"
 
 export const metadata = {
-  title: "Neon Dash Runner",
-  description: "Corrida arcade futurista infinita"
+  title: "Urban Drift Rush",
+  description: "Corrida urbana infinita estilo arcade"
 }
 
 export default function RootLayout({ children }) {
