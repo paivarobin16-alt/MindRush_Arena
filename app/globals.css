@@ -1,9 +1,40 @@
-
 body {
   margin: 0;
   background: linear-gradient(#020617, #000);
   overflow: hidden;
+  font-family: Arial, sans-serif;
 }
-canvas {
-  display: block;
+
+#hud {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  color: #fff;
+  z-index: 10;
+}
+
+#hud div {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+#gameOver {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  z-index: 20;
+}
+
+#gameOver button {
+  margin-top: 20px;
+  padding: 14px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background: #22d3ee;
 }
