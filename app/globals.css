@@ -1,7 +1,7 @@
+
 body {
   margin: 0;
-  background: radial-gradient(circle, #020617, #000);
-  color: white;
+  background: linear-gradient(#020617, #000);
   overflow: hidden;
 }
 canvas {
