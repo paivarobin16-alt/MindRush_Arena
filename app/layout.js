@@ -1,8 +1,8 @@
 import "./globals.css"
 
 export const metadata = {
-  title: "MindRush Arena",
-  description: "Desafie sua mente contra o tempo"
+  title: "Neon Dash Runner",
+  description: "Corrida arcade futurista infinita"
 }
 
 export default function RootLayout({ children }) {
