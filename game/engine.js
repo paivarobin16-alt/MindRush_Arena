@@ -1,78 +1,121 @@
 export function startGame(canvas) {
   const ctx = canvas.getContext("2d")
 
-  let speed = 5
+  const lanes = [
+    canvas.width / 2 - 120,
+    canvas.width / 2,
+    canvas.width / 2 + 120
+  ]
+
+  let speed = 6
   let score = 0
+  let distance = 0
 
   const player = {
-    x: 80,
-    y: 200,
-    size: 30,
-    vy: 0,
-    jump() {
-      if (this.y >= 200) this.vy = -15
-    }
+    lane: 1,
+    y: canvas.height - 160,
+    w: 50,
+    h: 90
   }
 
-  const obstacles = []
+  const traffic = []
+  const coins = []
 
-  function spawnObstacle() {
-    obstacles.push({
-      x: canvas.width,
-      y: 220,
-      w: 30,
-      h: 30
+  function spawnCar() {
+    traffic.push({
+      lane: Math.floor(Math.random() * 3),
+      y: -100,
+      w: 50,
+      h: 90
+    })
+  }
+
+  function spawnCoin() {
+    coins.push({
+      lane: Math.floor(Math.random() * 3),
+      y: -50,
+      r: 12
     })
   }
 
   function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    // chão
-    ctx.fillStyle = "#0ff"
-    ctx.fillRect(0, 260, canvas.width, 5)
+    // estrada
+    ctx.fillStyle = "#111"
+    ctx.fillRect(canvas.width / 2 - 200, 0, 400, canvas.height)
 
-    // player
+    // faixas
+    ctx.strokeStyle = "#fff"
+    ctx.setLineDash([20, 20])
+    ctx.beginPath()
+    ctx.moveTo(canvas.width / 2, 0)
+    ctx.lineTo(canvas.width / 2, canvas.height)
+    ctx.stroke()
+    ctx.setLineDash([])
+
+    // jogador
     ctx.fillStyle = "#38bdf8"
-    ctx.fillRect(player.x, player.y, player.size, player.size)
+    ctx.fillRect(lanes[player.lane] - 25, player.y, player.w, player.h)
 
-    // física
-    player.vy += 1
-    player.y += player.vy
-    if (player.y > 200) {
-      player.y = 200
-      player.vy = 0
-    }
-
-    // obstáculos
-    obstacles.forEach(o => {
-      o.x -= speed
+    // trânsito
+    traffic.forEach(c => {
+      c.y += speed
       ctx.fillStyle = "#f43f5e"
-      ctx.fillRect(o.x, o.y, o.w, o.h)
+      ctx.fillRect(lanes[c.lane] - 25, c.y, c.w, c.h)
 
-      // colisão
       if (
-        player.x < o.x + o.w &&
-        player.x + player.size > o.x &&
-        player.y < o.y + o.h &&
-        player.y + player.size > o.y
+        lanes[c.lane] === lanes[player.lane] &&
+        c.y + c.h > player.y &&
+        c.y < player.y + player.h
       ) {
-        alert("Game Over! Pontuação: " + Math.floor(score))
+        alert("💥 Bateu! Distância: " + Math.floor(distance) + "m")
         window.location.reload()
       }
     })
 
-    if (Math.random() < 0.02) spawnObstacle()
+    // moedas
+    coins.forEach((m, i) => {
+      m.y += speed
+      ctx.fillStyle = "#facc15"
+      ctx.beginPath()
+      ctx.arc(lanes[m.lane], m.y, m.r, 0, Math.PI * 2)
+      ctx.fill()
 
-    speed += 0.001
-    score += 0.1
+      if (
+        m.lane === player.lane &&
+        m.y > player.y &&
+        m.y < player.y + player.h
+      ) {
+        coins.splice(i, 1)
+        score += 10
+      }
+    })
+
+    if (Math.random() < 0.03) spawnCar()
+    if (Math.random() < 0.04) spawnCoin()
+
+    speed += 0.002
+    distance += speed / 10
 
     ctx.fillStyle = "#fff"
-    ctx.fillText("Score: " + Math.floor(score), 20, 30)
+    ctx.font = "20px Arial"
+    ctx.fillText("Distância: " + Math.floor(distance) + " m", 20, 30)
+    ctx.fillText("Moedas: " + score, 20, 60)
 
     requestAnimationFrame(loop)
   }
 
-  canvas.addEventListener("click", () => player.jump())
+  window.addEventListener("touchstart", e => {
+    const x = e.touches[0].clientX
+    if (x < canvas.width / 2) player.lane = Math.max(0, player.lane - 1)
+    else player.lane = Math.min(2, player.lane + 1)
+  })
+
+  window.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") player.lane = Math.max(0, player.lane - 1)
+    if (e.key === "ArrowRight") player.lane = Math.min(2, player.lane + 1)
+  })
+
   loop()
 }
